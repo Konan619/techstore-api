@@ -15,12 +15,13 @@ public class ProductoService {
     @Autowired
     private ProductoRepository productoRepository;
 
-    // LISTAR TODOS
+    @Autowired
+    private AuditoriaService auditoriaService;
+
     public List<Producto> listarTodos() {
         return productoRepository.findAll();
     }
 
-    // CREAR PRODUCTO
     public Producto crear(ProductoDTO dto) {
 
         Producto producto = new Producto();
@@ -32,10 +33,18 @@ public class ProductoService {
         producto.setCategoria(dto.getCategoria());
         producto.setActivo(true);
 
-        return productoRepository.save(producto);
+        Producto productoGuardado = productoRepository.save(producto);
+
+        auditoriaService.enviarEvento(
+                "CREAR",
+                productoGuardado.getId(),
+                productoGuardado.getNombre(),
+                "admin@techstore.cl"
+        );
+
+        return productoGuardado;
     }
 
-    // MODIFICAR PRODUCTO
     public Producto modificar(Long id, ProductoDTO dto) {
 
         Producto producto = productoRepository.findById(id)
@@ -47,10 +56,18 @@ public class ProductoService {
         producto.setStock(dto.getStock());
         producto.setCategoria(dto.getCategoria());
 
-        return productoRepository.save(producto);
+        Producto productoActualizado = productoRepository.save(producto);
+
+        auditoriaService.enviarEvento(
+                "MODIFICAR",
+                productoActualizado.getId(),
+                productoActualizado.getNombre(),
+                "admin@techstore.cl"
+        );
+
+        return productoActualizado;
     }
 
-    // ELIMINACIÓN LÓGICA
     public void eliminar(Long id) {
 
         Producto producto = productoRepository.findById(id)
@@ -58,7 +75,14 @@ public class ProductoService {
 
         producto.setActivo(false);
 
-        productoRepository.save(producto);
+        Producto productoEliminado = productoRepository.save(producto);
+
+        auditoriaService.enviarEvento(
+                "ELIMINAR",
+                productoEliminado.getId(),
+                productoEliminado.getNombre(),
+                "admin@techstore.cl"
+        );
     }
 
     public List<Producto> listarActivos() {

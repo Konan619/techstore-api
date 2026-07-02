@@ -34,7 +34,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
 
                         // LOGIN PÚBLICO
-                        .requestMatchers("/auth/login").permitAll()
+                        .requestMatchers("/auth/login", "/health").permitAll()
 
                         // TODO LO DEMÁS PROTEGIDO
                         .anyRequest().authenticated()
